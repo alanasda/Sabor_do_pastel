@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sabor do Pastel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --amarelo:       #F5C400;
+      --amarelo-vivo:  #FFD700;
+      --amarelo-escuro:#C99000;
+      --amarelo-fundo: #F0BC00;
+      --preto:         #0C0C0C;
+      --preto-suave:   #141414;
+      --cinza:         #1C1C1C;
+      --cinza-texto:   #555;
+      --branco:        #FAFAFA;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--amarelo-fundo);
+      color: var(--preto);
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 40px;
+      background: rgba(240,188,0,0.9);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo img {
+      height: 38px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+    }
+    .nav-logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.12em;
+      color: var(--preto);
+      line-height: 1;
+    }
+
+    .nav-cta {
+      background: var(--preto);
+      color: var(--amarelo);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 10px 22px;
+      transition: opacity 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.75; }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 120px 60px 80px;
+      gap: 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,0.45);
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.2s forwards;
+    }
+    .hero-tag::before {
+      content: '';
+      display: block;
+      width: 22px; height: 1px;
+      background: currentColor;
+    }
+
+    .hero-headline {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(60px, 8.5vw, 112px);
+      line-height: 0.92;
+      letter-spacing: 0.01em;
+      color: var(--preto);
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.35s forwards;
+    }
+    .hero-headline em {
+      font-style: normal;
+      -webkit-text-stroke: 2px var(--preto);
+      color: transparent;
+    }
+
+    .hero-sub {
+      font-size: 13px;
+      font-weight: 300;
+      color: rgba(0,0,0,0.6);
+      max-width: 360px;
+      line-height: 1.85;
+      margin-bottom: 44px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.5s forwards;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.65s forwards;
+    }
+
+    .btn-dark {
+      background: var(--preto);
+      color: var(--amarelo);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      padding: 16px 38px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-dark:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--preto);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: 2px solid var(--preto);
+      cursor: pointer;
+      padding: 14px 30px;
+      transition: background 0.2s, color 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-outline:hover { background: var(--preto); color: var(--amarelo); }
+
+    /* ─── HERO RIGHT ─── */
+    .hero-right {
+      display: flex;
+      justify-content: center;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.5s forwards;
+    }
+
+    .hero-visual {
+      width: 100%;
+      max-width: 340px;
+      aspect-ratio: 3/4;
+      background: var(--preto);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+    }
+    .hero-visual img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+    .hero-visual-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      opacity: 0.18;
+      z-index: 0;
+    }
+    .hero-visual-placeholder svg { color: var(--amarelo); }
+    .hero-visual-placeholder span {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--amarelo);
+    }
+    .hero-visual-dots {
+      position: absolute;
+      top: 24px; right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      z-index: 3;
+    }
+    .hero-visual-dots span {
+      display: block; width: 5px; height: 5px;
+      border-radius: 50%; background: var(--amarelo); opacity: 0.35;
+    }
+    .hero-visual-dots span:first-child { opacity: 1; }
+    .hero-visual-inner {
+      padding: 24px;
+      position: relative;
+      z-index: 2;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      width: 100%;
+    }
+    .hero-visual-tag {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--amarelo);
+      margin-bottom: 8px;
+    }
+    .hero-visual-big {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      line-height: 1;
+      color: var(--branco);
+    }
+    .hero-visual-big span { color: var(--amarelo); }
+
+    /* ─── STRIP ─── */
+    .strip {
+      background: var(--preto);
+      overflow: hidden;
+      padding: 14px 0;
+      position: relative; z-index: 1;
+    }
+    .strip-track {
+      display: flex; gap: 44px;
+      white-space: nowrap;
+      animation: marquee 22s linear infinite;
+      width: max-content;
+    }
+    .strip-item {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.22em;
+      color: var(--amarelo);
+      flex-shrink: 0;
+    }
+    .strip-dot { color: rgba(245,196,0,0.3); margin: 0 4px; }
+
+    /* ─── SECTIONS ─── */
+    .sec { position: relative; z-index: 1; }
+    .sec-inner { max-width: 1100px; margin: 0 auto; padding: 80px 40px; }
+
+    .sec-tag {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(0,0,0,0.4);
+      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sec-tag::before {
+      content: ''; display: block;
+      width: 18px; height: 1px; background: currentColor;
+    }
+
+    .sec-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(38px, 5.5vw, 68px);
+      line-height: 0.95;
+      color: var(--preto);
+      letter-spacing: 0.02em;
+      margin-bottom: 20px;
+    }
+
+    .sec-body {
+      font-size: 13px; font-weight: 300;
+      color: rgba(0,0,0,0.6);
+      line-height: 1.9;
+      max-width: 500px;
+    }
+    .sec-body strong { font-weight: 600; color: var(--preto); }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px; align-items: center;
+    }
+
+    /* ─── PILARES ─── */
+    .pilares-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 40px 80px;
+    }
+
+    .pilar {
+      background: var(--preto);
+      color: var(--branco);
+      padding: 36px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.25s;
+    }
+    .pilar:hover { background: #181818; }
+
+    .pilar-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 52px; line-height: 1;
+      color: var(--amarelo); opacity: 0.1;
+      position: absolute; top: 10px; right: 14px;
+    }
+    .pilar-accent { width: 28px; height: 2px; background: var(--amarelo); margin-bottom: 14px; }
+    .pilar-title {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--amarelo); margin-bottom: 10px;
+    }
+    .pilar-desc { font-size: 12px; font-weight: 300; color: rgba(255,255,255,0.55); line-height: 1.7; }
+
+    /* ─── FEEDBACKS CARROSSEL 9:16 ─── */
+    #feedbacks { background: var(--preto); padding-bottom: 80px; position: relative; z-index: 1; }
+
+    .feed-header { max-width: 1100px; margin: 0 auto; padding: 60px 40px 36px; }
+    .feed-header .sec-tag { color: rgba(245,196,0,0.6); }
+    .feed-header .sec-title { color: var(--branco); }
+
+    .carousel-wrap { overflow: hidden; }
+
+    .carousel-track {
+      display: flex;
+      gap: 14px;
+      padding: 0 40px 28px;
+      animation: slideCards 35s linear infinite;
+      width: max-content;
+    }
+    .carousel-track:hover { animation-play-state: paused; }
+
+    /* Card proporção 9:16 */
+    .feed-card {
+      flex-shrink: 0;
+      width: 175px;
+      aspect-ratio: 9 / 16;
+      background: var(--cinza);
+      border: 1px solid #222;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .feed-card:hover { transform: scale(1.04); }
+
+    .feed-card-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(145deg, #1e1e1e 0%, #111 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 8px;
+      z-index: 0;
+    }
+    .feed-card-bg-icon {
+      width: 40px; height: 40px;
+      border: 1.5px dashed rgba(245,196,0,0.3);
+      border-radius: 3px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .feed-card-bg-icon svg { opacity: 0.3; }
+    .feed-card-bg-label {
+      font-size: 8px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(245,196,0,0.3);
+    }
+
+    .feed-card img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; z-index: 1;
+    }
+
+    /* ─── OBJEÇÕES ─── */
+    .objections { background: var(--amarelo-fundo); }
+
+    .obj-list { margin-top: 36px; }
+    .obj-item {
+      display: flex; align-items: flex-start;
+      gap: 18px; padding: 24px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    .obj-item:last-child { border-bottom: none; }
+    .obj-index {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 30px; color: var(--preto);
+      opacity: 0.1; line-height: 1; min-width: 32px;
+    }
+    .obj-title {
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 0.03em; margin-bottom: 5px;
+    }
+    .obj-desc {
+      font-size: 12px; font-weight: 300;
+      color: rgba(0,0,0,0.55); line-height: 1.75; max-width: 460px;
+    }
+
+    /* ─── MISTÉRIO ─── */
+    .sec-dark { background: var(--preto); }
+    .sec-dark .sec-tag { color: rgba(245,196,0,0.6); }
+    .sec-dark .sec-title { color: var(--branco); }
+
+    .misterio .sec-inner { text-align: center; padding: 100px 40px; }
+    .misterio-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(42px, 7vw, 88px);
+      line-height: 0.95; color: var(--branco);
+      letter-spacing: 0.02em; margin-bottom: 20px;
+    }
+    .misterio-title span { color: var(--amarelo); }
+    .misterio-sub {
+      font-size: 13px; font-weight: 300;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.8; max-width: 380px;
+      margin: 0 auto 44px;
+    }
+
+    /* ─── CTA FINAL ─── */
+    #whatsapp {
+      background: var(--amarelo-fundo);
+      position: relative; z-index: 1; overflow: hidden;
+    }
+    #whatsapp::before {
+      content: 'SABOR';
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(90px, 22vw, 280px);
+      color: rgba(0,0,0,0.04);
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      white-space: nowrap; letter-spacing: 0.05em;
+      pointer-events: none;
+    }
+
+    .cta-inner {
+      max-width: 680px; margin: 0 auto;
+      padding: 100px 40px; text-align: center;
+      position: relative; z-index: 1;
+    }
+    .cta-eyebrow {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(0,0,0,0.4); margin-bottom: 18px;
+    }
+    .cta-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(52px, 9vw, 100px);
+      line-height: 0.9; color: var(--preto);
+      letter-spacing: 0.02em; margin-bottom: 18px;
+    }
+    .cta-sub {
+      font-size: 13px; font-weight: 300;
+      color: rgba(0,0,0,0.55); line-height: 1.8; margin-bottom: 48px;
+    }
+
+    .btn-wpp {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: var(--preto); color: var(--amarelo);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      text-decoration: none;
+      padding: 20px 50px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-wpp:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.28);
+    }
+    .btn-wpp svg { width: 19px; height: 19px; flex-shrink: 0; }
+
+    .cta-hint {
+      margin-top: 16px; font-size: 11px;
+      letter-spacing: 0.07em; color: rgba(0,0,0,0.3);
+    }
+    .closing {
+      margin-top: 68px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(16px, 2.5vw, 24px);
+      letter-spacing: 0.07em; color: rgba(0,0,0,0.12);
+      line-height: 1.4;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--preto); text-align: center;
+      padding: 26px 24px;
+      font-size: 10px; letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.18); text-transform: uppercase;
+      position: relative; z-index: 1;
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @keyframes slideCards {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { padding: 14px 20px; }
+      .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; gap: 36px; }
+      .hero-right { display: none; }
+      .sec-inner { padding: 60px 20px; }
+      .two-col { grid-template-columns: 1fr; gap: 28px; }
+      .pilares-grid { grid-template-columns: 1fr; padding: 0 20px 60px; }
+      .feed-header { padding: 44px 20px 28px; }
+      .carousel-track { padding: 0 20px 24px; }
+      .cta-inner { padding: 80px 20px; }
+      .btn-dark, .btn-wpp { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">
+      <img src="logo.png" alt="Sabor do Pastel">
+      <span class="nav-logo-text">SABOR DO PASTEL</span>
+    </a>
+    <a class="nav-cta" href="#whatsapp"
+       onclick="document.getElementById('whatsapp').scrollIntoView({behavior:'smooth'}); return false;">
+      Fazer pedido
+    </a>
+  </nav>
+
+  <!-- ══════ HERO ══════ -->
+  <section class="hero">
+    <div class="hero-left">
+      <p class="hero-tag">Feito na hora, todo dia</p>
+      <h1 class="hero-headline">
+        UM PASTEL<br>
+        QUE VOCÊ<br>
+        <em>NÃO ESQUECE</em>
+      </h1>
+      <p class="hero-sub">
+        Não é sobre matar fome.<br>
+        É sobre a experiência que começa na primeira mordida e não termina.
+      </p>
+      <div class="hero-btns">
+        <button class="btn-dark"
+          onclick="document.getElementById('whatsapp').scrollIntoView({behavior:'smooth'})">
+          Quero provar agora
+        </button>
+        <button class="btn-outline"
+          onclick="document.getElementById('feedbacks').scrollIntoView({behavior:'smooth'})">
+          Ver feedbacks
+        </button>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-visual">
+        <!-- Imagem Principal -->
+        <img src="pastel-hero.jpg" alt="Nosso Pastel Destaque">
+        
+        <div class="hero-visual-placeholder">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" color="#F5C400">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <path d="M21 15l-5-5L5 21"/>
+          </svg>
+          <span>foto do pastel</span>
+        </div>
+        <div class="hero-visual-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="hero-visual-inner">
+          <div class="hero-visual-tag">Sabor do Pastel</div>
+          <div class="hero-visual-big">CROCANTE<br><span>POR FORA</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STRIP -->
+  <div class="strip">
+    <div class="strip-track">
+      <span class="strip-item">FEITO NA HORA <span class="strip-dot">✦</span></span>
+      <span class="strip-item">RECHEIO GENEROSO <span class="strip-dot">✦</span></span>
+      <span class="strip-item">CROCÂNCIA REAL <span class="strip-dot">✦</span></span>
+      <span class="strip-item">INGREDIENTES SELECIONADOS <span class="strip-dot">✦</span></span>
+      <span class="strip-item">SABOR DE VERDADE <span class="strip-dot">✦</span></span>
+      <span class="strip-item">SABOR QUE FICA <span class="strip-dot">✦</span></span>
+      <span class="strip-item">FEITO NA HORA <span class="strip-dot">✦</span></span>
+      <span class="strip-item">RECHEIO GENEROSO <span class="strip-dot">✦</span></span>
+      <span class="strip-item">CROCÂNCIA REAL <span class="strip-dot">✦</span></span>
+      <span class="strip-item">INGREDIENTES SELECIONADOS <span class="strip-dot">✦</span></span>
+      <span class="strip-item">SABOR DE VERDADE <span class="strip-dot">✦</span></span>
+      <span class="strip-item">SABOR QUE FICA <span class="strip-dot">✦</span></span>
+    </div>
+  </div>
+
+  <!-- ══════ SENSORIAL ══════ -->
+  <section class="sec">
+    <div class="sec-inner two-col">
+      <div>
+        <p class="sec-tag">A experiência</p>
+        <h2 class="sec-title">CROCANTE.<br>INTENSO.<br>PERFEITO.</h2>
+      </div>
+      <div>
+        <p class="sec-body">
+          Existe uma diferença entre comer um pastel e <strong>viver um pastel</strong>.<br><br>
+          A massa estala ao morder. O recheio preenche. A temperatura é exata.
+          Não há sobra. Não há falta. Só o equilíbrio de quem domina o que faz.<br><br>
+          Quem prova uma vez, pede de novo antes de terminar o primeiro.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PILARES -->
+  <div class="pilares-grid">
+    <div class="pilar">
+      <div class="pilar-num">01</div>
+      <div class="pilar-accent"></div>
+      <div class="pilar-title">Feito na hora</div>
+      <div class="pilar-desc">Cada unidade nasce no momento do pedido. Sem estoque. Sem congelado. Sem compromisso com o mediano.</div>
+    </div>
+    <div class="pilar">
+      <div class="pilar-num">02</div>
+      <div class="pilar-accent"></div>
+      <div class="pilar-title">Ingredientes selecionados</div>
+      <div class="pilar-desc">Não abrimos mão da qualidade para ganhar margem. O que entra aqui, entraríamos no nosso também.</div>
+    </div>
+    <div class="pilar">
+      <div class="pilar-num">03</div>
+      <div class="pilar-accent"></div>
+      <div class="pilar-title">Receitas exclusivas</div>
+      <div class="pilar-desc">Combinações que você não encontra em outro lugar. Desenvolvidas com obsessão por sabor e equilíbrio.</div>
+    </div>
+    <div class="pilar">
+      <div class="pilar-num">04</div>
+      <div class="pilar-accent"></div>
+      <div class="pilar-title">Padrão sem concessão</div>
+      <div class="pilar-desc">O décimo pastel do dia tem o mesmo cuidado do primeiro. Sempre. Sem exceção.</div>
+    </div>
+  </div>
+
+  <!-- ══════ CARROSSEL 9:16 ══════ -->
+  <section id="feedbacks">
+    <div class="feed-header">
+      <p class="sec-tag" style="color:rgba(245,196,0,0.55);">Prova social</p>
+      <h2 class="sec-title" style="color:var(--branco);">O QUE DIZEM<br>QUEM JÁ PROVOU</h2>
+    </div>
+
+    <div class="carousel-wrap">
+      <div class="carousel-track">
+
+        <!-- Feedbacks -->
+        <div class="feed-card">
+          <img src="feedback-1.jpg" alt="Feedback">
+          <div class="feed-card-bg"><div class="feed-card-bg-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F5C400" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div><span class="feed-card-bg-label">foto 1</span></div>
+        </div>
+
+        <div class="feed-card">
+          <img src="feedback-2.jpg" alt="Feedback">
+          <div class="feed-card-bg"><div class="feed-card-bg-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F5C400" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div><span class="feed-card-bg-label">foto 2</span></div>
+        </div>
+
+        <div class="feed-card">
+          <img src="feedback-3.jpg" alt="Feedback">
+          <div class="feed-card-bg"><div class="feed-card-bg-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F5C400" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div><span class="feed-card-bg-label">foto 3</span></div>
+        </div>
+
+        <div class="feed-card">
+          <img src="feedback-4.jpg" alt="Feedback">
+          <div class="feed-card-bg"><div class="feed-card-bg-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F5C400" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div><span class="feed-card-bg-label">foto 4</span></div>
+        </div>
+
+        <div class="feed-card">
+          <img src="feedback-5.jpg" alt="Feedback">
+          <div class="feed-card-bg"><div class="feed-card-bg-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F5C400" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div><span class="feed-card-bg-label">foto 5</span></div>
+        </div>
+
+        <div class="feed-card">
+          <img src="feedback-6.jpg" alt="Feedback">
+          <div class="feed-card-bg"><div class="feed-card-bg-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F5C400" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div><span class="feed-card-bg-label">foto 6</span></div>
+        </div>
+
+        <div class="feed-card">
+          <img src="feedback-7.jpg" alt="Feedback">
+          <div class="feed-card-bg"><div class="feed-card-bg-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F5C400" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div><span class="feed-card-bg-label">foto 7</span></div>
+        </div>
+
+        <!-- Duplicados para loop infinito -->
+        <div class="feed-card"><img src="feedback-1.jpg" alt="Feedback"><div class="feed-card-bg"></div></div>
+        <div class="feed-card"><img src="feedback-2.jpg" alt="Feedback"><div class="feed-card-bg"></div></div>
+        <div class="feed-card"><img src="feedback-3.jpg" alt="Feedback"><div class="feed-card-bg"></div></div>
+        <div class="feed-card"><img src="feedback-4.jpg" alt="Feedback"><div class="feed-card-bg"></div></div>
+        <div class="feed-card"><img src="feedback-5.jpg" alt="Feedback"><div class="feed-card-bg"></div></div>
+        <div class="feed-card"><img src="feedback-6.jpg" alt="Feedback"><div class="feed-card-bg"></div></div>
+        <div class="feed-card"><img src="feedback-7.jpg" alt="Feedback"><div class="feed-card-bg"></div></div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ OBJEÇÕES ══════ -->
+  <section class="sec objections">
+    <div class="sec-inner">
+      <p class="sec-tag">Perguntas frequentes</p>
+      <h2 class="sec-title">DÚVIDAS QUE<br>TODO MUNDO TEM</h2>
+      <div class="obj-list">
+        <div class="obj-item">
+          <div class="obj-index">01</div>
+          <div>
+            <div class="obj-title">E o preço?</div>
+            <div class="obj-desc">Esse é o único segredo que guardamos. Quem prova nunca achou caro — porque o valor está na experiência, e essa não tem comparação direta.</div>
+          </div>
+        </div>
+        <div class="obj-item">
+          <div class="obj-index">02</div>
+          <div>
+            <div class="obj-title">Demora muito?</div>
+            <div class="obj-desc">Feito na hora não é espera longa. Significa que quando chega, está no ponto exato — não ficou numa vitrine esperando por você.</div>
+          </div>
+        </div>
+        <div class="obj-item">
+          <div class="obj-index">03</div>
+          <div>
+            <div class="obj-title">É higienizado?</div>
+            <div class="obj-desc">Processo limpo, ambiente controlado, preparo com responsabilidade. O que entra no seu pedido, entraríamos no nosso também.</div>
+          </div>
+        </div>
+        <div class="obj-item">
+          <div class="obj-index">04</div>
+          <div>
+            <div class="obj-title">Tem entrega?</div>
+            <div class="obj-desc">Fale com a gente pelo WhatsApp. Respondemos rápido e combinamos tudo por lá.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ MISTÉRIO ══════ -->
+  <section class="sec sec-dark misterio">
+    <div class="sec-inner">
+      <p class="sec-tag" style="color:rgba(245,196,0,0.5);justify-content:center;">Antes de ir</p>
+      <h2 class="misterio-title">O PREÇO?<br>VOCÊ DESCOBRE<br><span>QUANDO PEDE.</span></h2>
+      <p class="misterio-sub">
+        Criamos uma expectativa propositalmente.<br>
+        O pastel precisa falar por si.<br>
+        Antes de tudo — experimente.
+      </p>
+      <button class="btn-dark"
+        onclick="document.getElementById('whatsapp').scrollIntoView({behavior:'smooth'})">
+        Quero descobrir agora
+      </button>
+    </div>
+  </section>
+
+  <!-- ══════ CTA FINAL ══════ -->
+  <section id="whatsapp">
+    <div class="cta-inner">
+      <p class="cta-eyebrow">Produção limitada por horário</p>
+      <h2 class="cta-title">O PRÓXIMO<br>PEDIDO É<br>O SEU.</h2>
+      <p class="cta-sub">
+        Clique no botão. Fale direto com a gente.<br>
+        Sem formulário. Sem espera. Só o pedido.
+      </p>
+
+      <!-- ⚠️ Troque o número pelo número real da pastelaria -->
+      <a href="https://wa.me/55879968-9266?text=Ol%C3%A1%2C+quero+fazer+um+pedido!"
+         class="btn-wpp" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        Fazer meu pedido agora
+      </a>
+
+      <p class="cta-hint">Fala direto com a cozinha — sem intermediário.</p>
+
+      <p class="closing">
+        "Alguns lugares vendem comida.<br>
+        Outros criam o desejo de voltar."
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2025 Sabor do Pastel — Todos os direitos reservados
+  </footer>
+
+</body>
+</html>
+
+
